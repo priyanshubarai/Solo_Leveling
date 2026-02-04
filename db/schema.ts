@@ -66,3 +66,13 @@ export const goalsTable = pgTable("goals", {
   category : goalCategoryEnum().notNull().default("Weekly")
 });
 
+export const statTable = pgTable("stats",{
+  statid : serial().primaryKey(),
+  userid : uuid().notNull().unique().references(()=>usersTable.userid , {onDelete: 'cascade'}),
+  agility : integer().default(0),
+  fitness : integer().default(0),
+  health : integer().default(0),
+  intelligence : integer().default(0),
+  creativity : integer().default(0),
+  social : integer().default(0),
+})
