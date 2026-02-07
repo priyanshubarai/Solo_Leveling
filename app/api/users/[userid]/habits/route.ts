@@ -8,6 +8,15 @@ export async function GET(
   { params }: { params: Promise<{ userid: string }> },
 ) {
   const { userid } = await params;
+  const habits = await db
+    .select()
+    .from(habitsTable)
+    .where(eq(habitsTable.clerkuserid, userid));
+  console.log("habits fetched : ", habits);
+  return NextResponse.json(
+    { message: "success", data: habits },
+    { status: 200 },
+  );
 }
 
 export async function POST(
@@ -36,7 +45,7 @@ export async function DELETE(
 ) {
   const { userid } = await params;
   const { habitid } = await req.json();
-  console.log(userid,habitid);
+  console.log(userid, habitid);
   const deletedHabit = await db
     .delete(habitsTable)
     .where(
@@ -44,7 +53,8 @@ export async function DELETE(
         eq(habitsTable.habitid, habitid),
         eq(habitsTable.clerkuserid, userid),
       ),
-    ).returning();
+    )
+    .returning();
   console.log("habit deleted : ", deletedHabit);
   return NextResponse.json(
     { message: "habbit deleted", data: deletedHabit },
