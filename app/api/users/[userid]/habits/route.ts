@@ -8,15 +8,20 @@ export async function GET(
   { params }: { params: Promise<{ userid: string }> },
 ) {
   const { userid } = await params;
-  const habits = await db
-    .select()
-    .from(habitsTable)
-    .where(eq(habitsTable.clerkuserid, userid));
-  console.log("habits fetched : ", habits);
-  return NextResponse.json(
-    { message: "success", data: habits },
-    { status: 200 },
-  );
+  try {
+    const habits = await db
+      .select()
+      .from(habitsTable)
+      .where(eq(habitsTable.clerkuserid, userid));
+    console.log("habits fetched : ", habits);
+    return NextResponse.json(
+      { message: "success", data: habits },
+      { status: 200 },
+    );
+  } catch (error) {
+    console.log("Error : ", error);
+    return NextResponse.json({ error : "Internal Server Error" }, { status: 500 });
+  }
 }
 
 export async function POST(
@@ -24,19 +29,24 @@ export async function POST(
   { params }: { params: Promise<{ userid: string }> },
 ) {
   const { userid } = await params;
-  const { habittitle } = await req.json();
-  const newHabit = await db
-    .insert(habitsTable)
-    .values({
-      clerkuserid: userid,
-      habittitle: habittitle,
-    })
-    .returning();
-  console.log(`New habit ${newHabit} created for user ${userid}`);
-  return NextResponse.json(
-    { message: "new habit created", data: newHabit },
-    { status: 201 },
-  );
+  try {
+    const { habittitle } = await req.json();
+    const newHabit = await db
+      .insert(habitsTable)
+      .values({
+        clerkuserid: userid,
+        habittitle: habittitle,
+      })
+      .returning();
+    console.log(`New habit ${newHabit} created for user ${userid}`);
+    return NextResponse.json(
+      { message: "new habit created", data: newHabit },
+      { status: 201 },
+    );
+  } catch (error) {
+    console.log("Error : ", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
 }
 
 export async function DELETE(
@@ -44,20 +54,25 @@ export async function DELETE(
   { params }: { params: Promise<{ userid: string }> },
 ) {
   const { userid } = await params;
-  const { habitid } = await req.json();
-  console.log(userid, habitid);
-  const deletedHabit = await db
-    .delete(habitsTable)
-    .where(
-      and(
-        eq(habitsTable.habitid, habitid),
-        eq(habitsTable.clerkuserid, userid),
-      ),
-    )
-    .returning();
-  console.log("habit deleted : ", deletedHabit);
-  return NextResponse.json(
-    { message: "habbit deleted", data: deletedHabit },
-    { status: 200 },
-  );
+  try {
+    const { habitid } = await req.json();
+    console.log(userid, habitid);
+    const deletedHabit = await db
+      .delete(habitsTable)
+      .where(
+        and(
+          eq(habitsTable.habitid, habitid),
+          eq(habitsTable.clerkuserid, userid),
+        ),
+      )
+      .returning();
+    console.log("habit deleted : ", deletedHabit);
+    return NextResponse.json(
+      { message: "habbit deleted", data: deletedHabit },
+      { status: 200 },
+    );
+  } catch (error) {
+    console.log("Error : ", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
 }

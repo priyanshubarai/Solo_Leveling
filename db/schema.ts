@@ -96,4 +96,5 @@ export const statTable = pgTable("stats", {
   intelligence: integer().default(0),
   creativity: integer().default(0),
   social: integer().default(0),
+  ...timestamps
 });

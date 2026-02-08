@@ -6,36 +6,46 @@ import { NextRequest, NextResponse } from "next/server";
 type NewUser = typeof usersTable.$inferInsert;
 
 export async function POST(req: NextRequest) {
-  const { clerkuserid, username, email } = await req.json();
-  const newUser = await db
-    .insert(usersTable)
-    .values({
-      clerkuserid: clerkuserid,
-      username: username,
-      email: email,
-    })
-    .returning();
-  console.log("User Created : ", newUser);
-  return NextResponse.json(
-    {
-      message: "User Created",
-      user: newUser,
-    },
-    { status: 201 },
-  );
+  try {
+    const { clerkuserid, username, email } = await req.json();
+    const newUser = await db
+      .insert(usersTable)
+      .values({
+        clerkuserid: clerkuserid,
+        username: username,
+        email: email,
+      })
+      .returning();
+    console.log("User Created : ", newUser);
+    return NextResponse.json(
+      {
+        message: "User Created",
+        user: newUser,
+      },
+      { status: 201 },
+    );
+  } catch (error) {
+    console.log("Error : ", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
 }
 
 export async function DELETE(req: NextRequest) {
-  const { clerkuserid } = await req.json();
-  const deletedUser = await db
-    .delete(usersTable)
-    .where(eq(usersTable.clerkuserid, clerkuserid))
-    .returning();
-  console.log("User Deleted : ", deletedUser);
-  return NextResponse.json(
-    { message: "User Deleted", user: deletedUser },
-    { status: 200 },
-  );
+  try {
+    const { clerkuserid } = await req.json();
+    const deletedUser = await db
+      .delete(usersTable)
+      .where(eq(usersTable.clerkuserid, clerkuserid))
+      .returning();
+    console.log("User Deleted : ", deletedUser);
+    return NextResponse.json(
+      { message: "User Deleted", user: deletedUser },
+      { status: 200 },
+    );
+  } catch (error) {
+    console.log("Error : ", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
 }
 
 // async function main() {
