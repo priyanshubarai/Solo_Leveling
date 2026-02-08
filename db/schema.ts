@@ -11,6 +11,7 @@ import {
   pgEnum,
   timestamp,
   serial,
+  date,
 } from "drizzle-orm/pg-core";
 
 const timestamps = {
@@ -62,6 +63,17 @@ export const habitsTable = pgTable("habits", {
   habittitle: varchar({ length: 255 }).notNull(),
   category: questCategoryEnum().notNull().default("Productivity"),
 });
+
+export const habitsCompletionTable = pgTable("habitscompletion",{
+  dayid : serial().primaryKey(),
+  clerkuserid: varchar("clerkuserid", { length: 255 })
+    .notNull()
+    .references(() => usersTable.clerkuserid, { onDelete: "cascade" }), //FK
+  habitid : integer().notNull().references(()=> habitsTable.habitid , {onDelete: "cascade"}),
+  completedata: date().notNull().defaultNow(),
+  created_at : timestamp().defaultNow()
+})
+
 
 export const questsTable = pgTable("quests", {
   questid: serial().primaryKey(),
