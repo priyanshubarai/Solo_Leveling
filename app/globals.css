@@ -1,3 +1,115 @@
+/* @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap'); */
 @import "tailwindcss";
 
 
+@layer base {
+  :root {
+    --background: 240 15% 3%;
+    --foreground: 220 20% 90%;
+
+    --card: 240 12% 6%;
+    --card-foreground: 220 20% 90%;
+
+    --popover: 240 12% 6%;
+    --popover-foreground: 220 20% 90%;
+
+    --primary: 230 90% 60%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 270 80% 55%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 240 10% 12%;
+    --muted-foreground: 220 10% 55%;
+
+    --accent: 190 100% 50%;
+    --accent-foreground: 240 15% 3%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 240 10% 15%;
+    --input: 240 10% 15%;
+    --ring: 230 90% 60%;
+
+    --radius: 0.5rem;
+
+    /* Custom tokens */
+    --glow-blue: 230 90% 60%;
+    --glow-purple: 270 80% 55%;
+    --glow-cyan: 190 100% 50%;
+    --crimson: 350 80% 55%;
+    --crimson-foreground: 0 0% 100%;
+
+    --sidebar-background: 240 12% 6%;
+    --sidebar-foreground: 220 20% 90%;
+    --sidebar-primary: 230 90% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 10% 12%;
+    --sidebar-accent-foreground: 220 20% 90%;
+    --sidebar-border: 240 10% 15%;
+    --sidebar-ring: 230 90% 60%;
+  }
+}
+
+/* @layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-body antialiased;
+  }
+} */
+
+@layer utilities {
+  .text-glow-blue {
+    text-shadow: 0 0 10px hsl(230 90% 60% / 0.6), 0 0 40px hsl(230 90% 60% / 0.3);
+  }
+
+  .text-glow-purple {
+    text-shadow: 0 0 10px hsl(270 80% 55% / 0.6), 0 0 40px hsl(270 80% 55% / 0.3);
+  }
+
+  .text-glow-cyan {
+    text-shadow: 0 0 10px hsl(190 100% 50% / 0.6), 0 0 40px hsl(190 100% 50% / 0.3);
+  }
+
+  .box-glow-blue {
+    box-shadow: 0 0 15px hsl(230 90% 60% / 0.3), 0 0 45px hsl(230 90% 60% / 0.1), inset 0 0 15px hsl(230 90% 60% / 0.05);
+  }
+
+  .box-glow-purple {
+    box-shadow: 0 0 15px hsl(270 80% 55% / 0.3), 0 0 45px hsl(270 80% 55% / 0.1), inset 0 0 15px hsl(270 80% 55% / 0.05);
+  }
+
+  .border-glow-blue {
+    border-color: hsl(230 90% 60% / 0.4);
+  }
+
+  .border-glow-purple {
+    border-color: hsl(270 80% 55% / 0.4);
+  }
+
+  .bg-grid-pattern {
+    background-image: 
+      linear-gradient(hsl(230 90% 60% / 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(230 90% 60% / 0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: hsl(240 15% 3%);
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(230 90% 60% / 0.3);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(230 90% 60% / 0.5);
+}

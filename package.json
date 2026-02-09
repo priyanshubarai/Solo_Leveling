@@ -10,11 +10,13 @@
   },
   "dependencies": {
     "@clerk/nextjs": "^6.37.2",
+    "@radix-ui/react-tooltip": "^1.2.8",
     "dotenv": "^17.2.3",
     "drizzle-orm": "^1.0.0-beta.13-f728631",
     "next": "16.1.6",
     "next-auth": "5.0.0-beta.30",
     "pg": "^8.18.0",
+    "radix-ui": "^1.4.3",
     "react": "19.2.3",
     "react-dom": "19.2.3"
   },
