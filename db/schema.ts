@@ -47,7 +47,7 @@ export const usersTable = pgTable(
     userid: uuid("userid").defaultRandom(),
     clerkuserid: varchar("clerkuserid", { length: 255 }).primaryKey(),
     username: varchar("username", { length: 255 }).notNull(),
-    email: varchar("email", { length: 255 }).notNull().unique(),
+    email: varchar("email", { length: 255 }).unique(),
     XP: integer("XP").default(0),
     level: levelEnum().default("F"),
     ...timestamps,

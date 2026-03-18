@@ -2,18 +2,23 @@ import db from "@/index";
 import { usersTable } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
+import { currentUser } from "@clerk/nextjs/server";
 
 type NewUser = typeof usersTable.$inferInsert;
 
 export async function POST(req: NextRequest) {
   try {
-    const { clerkuserid, username, email } = await req.json();
+    const user = await currentUser();
+
+    if (!user || !user.id)
+      return NextResponse.json({ error: "No User" }, { status: 401 });
+
     const newUser = await db
       .insert(usersTable)
       .values({
-        clerkuserid: clerkuserid,
-        username: username,
-        email: email,
+        clerkuserid: user.id,
+        username: user.username ?? "user",
+        email: user.primaryEmailAddress?.emailAddress,
       })
       .returning();
     console.log("User Created : ", newUser);
@@ -26,7 +31,10 @@ export async function POST(req: NextRequest) {
     );
   } catch (error) {
     console.log("Error : ", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
+    );
   }
 }
 
@@ -44,37 +52,9 @@ export async function DELETE(req: NextRequest) {
     );
   } catch (error) {
     console.log("Error : ", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
+    );
   }
 }
-
-// async function main() {
-//   const user: typeof usersTable.$inferInsert = {
-//     name: 'John',
-//     age: 30,
-//     email: 'john@example.com',
-//   };
-//   await db.insert(usersTable).values(user);
-//   console.log('New user created!')
-//   const users = await db.select().from(usersTable);
-//   console.log('Getting all users from the database: ', users)
-//   /*
-//   const users: {
-//     id: number;
-//     name: string;
-//     age: number;
-//     email: string;
-//   }[]
-//   */
-//   await db
-//     .update(usersTable)
-//     .set({
-//       age: 31,
-//     })
-//     .where(eq(usersTable.email, user.email));
-//   console.log('User info updated!')
-//   await db.delete(usersTable).where(eq(usersTable.email, user.email));
-//   console.log('User deleted!')
-// }
-
-// main();

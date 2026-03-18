@@ -1,6 +1,43 @@
-import { clerkMiddleware } from '@clerk/nextjs/server';
+import { clerkMiddleware,createRouteMatcher } from '@clerk/nextjs/server';
+import { NextResponse } from 'next/server';
 
-export default clerkMiddleware();
+const isApiRoute = createRouteMatcher(['/api(.*)'])
+const allowedOrigin = "http://localhost:8080";
+
+export default clerkMiddleware(async (auth, req) => {
+  // Handle CORS preflight requests
+  if (req.method === 'OPTIONS') {
+    return new NextResponse(null, {
+      status: 200,
+      headers: {
+        'Access-Control-Allow-Origin': allowedOrigin,
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      },
+    });
+  }
+
+  const {isAuthenticated} = await auth();
+  console.log("is auth : ",isAuthenticated)
+  if(!isAuthenticated && isApiRoute(req)){
+    console.log("Unauthorised!!");
+    return NextResponse.json({ error: 'Unauthorized' }, { 
+      status: 401,
+      headers: {
+        'Access-Control-Allow-Origin': allowedOrigin,
+      },
+    });
+  }
+
+  // For authenticated requests, proceed and add CORS headers
+  return NextResponse.next({
+    headers: {
+      'Access-Control-Allow-Origin': allowedOrigin,
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    },
+  });
+})
 
 export const config = {
   matcher: [
