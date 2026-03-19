@@ -11,7 +11,20 @@ export async function POST(req: NextRequest) {
     const user = await currentUser();
 
     if (!user || !user.id)
-      return NextResponse.json({ error: "No User" }, { status: 401 });
+      return NextResponse.json(
+        { error: "No User Signed In!!" },
+        { status: 401 },
+      );
+
+    const existingUser = await db
+      .select()
+      .from(usersTable)
+      .where(eq(usersTable.clerkuserid, user.id));
+    if (existingUser)
+      return NextResponse.json(
+        { message: "user already exists", data: existingUser },
+        { status: 201 },
+      );
 
     const newUser = await db
       .insert(usersTable)
@@ -25,7 +38,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         message: "User Created",
-        user: newUser,
+        data: newUser,
       },
       { status: 201 },
     );

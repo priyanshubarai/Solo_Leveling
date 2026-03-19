@@ -18,7 +18,7 @@ export default clerkMiddleware(async (auth, req) => {
   }
 
   const {isAuthenticated} = await auth();
-  console.log("is auth : ",isAuthenticated)
+  
   if(!isAuthenticated && isApiRoute(req)){
     console.log("Unauthorised!!");
     return NextResponse.json({ error: 'Unauthorized' }, { 
