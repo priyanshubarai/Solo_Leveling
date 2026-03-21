@@ -12,6 +12,7 @@ import {
   timestamp,
   serial,
   date,
+  boolean,
 } from "drizzle-orm/pg-core";
 
 const timestamps = {
@@ -84,6 +85,7 @@ export const questsTable = pgTable("quests", {
   questdesc: text(),
   category: questCategoryEnum().notNull().default("Productivity"),
   difficulty: difficultyEnum().notNull().default("Easy"),
+  completed: boolean().notNull().default(false)
 });
 
 export const goalsTable = pgTable("goals", {

@@ -5,11 +5,20 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req:NextRequest , { params }: { params: Promise<{ userid: string }> }) {
   const { userid } = await params;
+  const { searchParams } = new URL(req.url);
+  const completedParam = searchParams.get("completed");
+
   try {
+
+    const conditions = [eq(questsTable.clerkuserid, userid)]
+    if(completedParam!==null){
+      conditions.push(eq(questsTable.completed,completedParam==="true"));
+    }
+    
     const quests = await db
       .select()
       .from(questsTable)
-      .where(eq(questsTable.clerkuserid, userid));
+      .where(and(...conditions));
     console.log("quests fetched :",quests)
     return NextResponse.json(
       { message: "success", data: quests },
