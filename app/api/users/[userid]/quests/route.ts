@@ -3,30 +3,35 @@ import db from "@/index";
 import { and, eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(req:NextRequest , { params }: { params: Promise<{ userid: string }> }) {
+export async function GET(
+  req: NextRequest,
+  { params }: { params: Promise<{ userid: string }> },
+) {
   const { userid } = await params;
   const { searchParams } = new URL(req.url);
   const completedParam = searchParams.get("completed");
 
   try {
-
-    const conditions = [eq(questsTable.clerkuserid, userid)]
-    if(completedParam!==null){
-      conditions.push(eq(questsTable.completed,completedParam==="true"));
+    const conditions = [eq(questsTable.clerkuserid, userid)];
+    if (completedParam !== null) {
+      conditions.push(eq(questsTable.completed, completedParam === "true"));
     }
-    
+
     const quests = await db
       .select()
       .from(questsTable)
       .where(and(...conditions));
-    console.log("quests fetched :",quests)
+    console.log("quests fetched :", quests);
     return NextResponse.json(
       { message: "success", data: quests },
       { status: 200 },
     );
   } catch (error) {
-    console.log("Error : ",error)
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    console.log("Error : ", error);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
+    );
   }
 }
 
@@ -54,7 +59,10 @@ export async function POST(
     );
   } catch (error) {
     console.log("Error : ", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
+    );
   }
 }
 
@@ -83,6 +91,40 @@ export async function DELETE(
     );
   } catch (error) {
     console.log("Error : ", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
+    );
+  }
+}
+
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: Promise<{ userid: string }> },
+) {
+  const { completed, questid } = await req.json();
+  const { userid } = await params;
+
+  try {
+    const updatedQuest = await db
+      .update(questsTable)
+      .set({ completed })
+      .where(
+        and(
+          eq(questsTable.clerkuserid, userid),
+          eq(questsTable.questid, questid),
+        ),
+      )
+      .returning();
+    console.log("Updated quest : ",updatedQuest);
+    return NextResponse.json(
+      { message: "success", data: updatedQuest },
+      { status: 201 },
+    );
+  } catch (error) {
+    return NextResponse.json(
+      { message: "Update failed", data: error },
+      { status: 500 },
+    );
   }
 }
