@@ -30,17 +30,24 @@ export async function POST(
 ) {
   const { userid } = await params;
   try {
-    const { habittitle } = await req.json();
+    const { habittitle, category } = await req.json();
+    
+    // Map frontend category to backend enum (capitalize first letter)
+    const dbCategory = category 
+      ? (category.charAt(0).toUpperCase() + category.slice(1)) 
+      : "Productivity";
+
     const newHabit = await db
       .insert(habitsTable)
       .values({
         clerkuserid: userid,
         habittitle: habittitle,
+        category: dbCategory as any,
       })
       .returning();
-    console.log(`New habit ${newHabit} created for user ${userid}`);
+    console.log(`New habit created for user ${userid}`);
     return NextResponse.json(
-      { message: "new habit created", data: newHabit },
+      { message: "new habit created", data: newHabit[0] },
       { status: 201 },
     );
   } catch (error) {

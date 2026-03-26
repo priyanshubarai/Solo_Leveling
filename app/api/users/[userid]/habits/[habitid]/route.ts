@@ -9,16 +9,28 @@ export async function GET(
   { params }: { params: Promise<{ userid: string; habitid: number }> },
 ) {
   const { userid, habitid } = await params;
+  const searchParams = req.nextUrl.searchParams;
+  const month = searchParams.get("month");
+  const year = searchParams.get("year");
+
   try {
+    const filters = [
+      eq(habitsCompletionTable.clerkuserid, userid),
+      eq(habitsCompletionTable.habitid, habitid),
+    ];
+
+    if (month !== null) {
+      filters.push(eq(habitsCompletionTable.month, parseInt(month)));
+    }
+    if (year !== null) {
+      filters.push(eq(habitsCompletionTable.year, parseInt(year)));
+    }
+
     const habitCompletion = await db
       .select()
       .from(habitsCompletionTable)
-      .where(
-        and(
-          eq(habitsCompletionTable.clerkuserid, userid),
-          eq(habitsCompletionTable.habitid, habitid),
-        ),
-      );
+      .where(and(...filters));
+
     console.log("habit completion fetched : ", habitCompletion);
     return NextResponse.json(
       { message: "success", data: habitCompletion },
