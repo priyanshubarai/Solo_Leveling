@@ -13,6 +13,7 @@ import {
   serial,
   date,
   boolean,
+  unique,
 } from "drizzle-orm/pg-core";
 
 const timestamps = {
@@ -71,9 +72,13 @@ export const habitsCompletionTable = pgTable("habitscompletion",{
     .notNull()
     .references(() => usersTable.clerkuserid, { onDelete: "cascade" }), //FK
   habitid : integer().notNull().references(()=> habitsTable.habitid , {onDelete: "cascade"}),
-  completedata: date().notNull().defaultNow(),
+  day: integer().notNull(),
+  month: integer().notNull(), // 0-indexed: 0-11
+  year: integer().notNull(),
   created_at : timestamp().defaultNow()
-})
+}, (t) => [
+  unique().on(t.habitid, t.day, t.month, t.year)
+])
 
 
 export const questsTable = pgTable("quests", {

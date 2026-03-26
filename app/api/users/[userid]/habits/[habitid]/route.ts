@@ -39,44 +39,51 @@ export async function POST(
 ) {
   const { habitid, userid } = await params;
   const habitidint = parseInt(habitid);
+
   try {
-    //check existing
-    const completionEntryRows = await db
-      .select()
-      .from(habitsCompletionTable)
-      .where(
-        and(
-          eq(habitsCompletionTable.clerkuserid, userid),
-          eq(habitsCompletionTable.habitid, habitidint),
-          sql`${habitsCompletionTable.completedata} = CURRENT_DATE`,
-        ),
-      );
-    if (completionEntryRows[0]) {
-      console.log("already Exists : ", completionEntryRows[0]);
+    const body = await req.json().catch(() => ({}));
+    const now = new Date();
+    const day = body.day ?? now.getDate();
+    const month = body.month ?? now.getMonth();
+    const year = body.year ?? now.getFullYear();
+
+    // Validation
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    if (day < 1 || day > daysInMonth) {
       return NextResponse.json(
-        { message: "entry already exist", data: completionEntryRows[0] },
-        { status: 200 },
+        { message: "Invalid day for the given month" },
+        { status: 400 },
       );
     }
-
     //create new
     const newCompletionEntry = await db
       .insert(habitsCompletionTable)
       .values({
         clerkuserid: userid,
         habitid: habitidint,
+        day,
+        month,
+        year,
       })
+      .onConflictDoNothing()
       .returning();
+
+    if (newCompletionEntry.length === 0) {
+      return NextResponse.json(
+        { message: "entry already exist" },
+        { status: 200 },
+      );
+    }
 
     console.log("new completion entry created : ", newCompletionEntry);
     return NextResponse.json(
-      { message: "success", data: newCompletionEntry },
+      { message: "success", data: newCompletionEntry[0] },
       { status: 201 },
     );
   } catch (error) {
     console.log("Error : ", error);
     return NextResponse.json(
-      { error: "Internal Server Error" },
+      { error: "Internal Server Error!" },
       { status: 500 },
     );
   }
@@ -88,13 +95,30 @@ export async function DELETE(
 ) {
   const { userid, habitid } = await params;
   try {
+    const body = await req.json().catch(() => ({}));
+    const now = new Date();
+    const day = body.day ?? now.getDate();
+    const month = body.month ?? now.getMonth();
+    const year = body.year ?? now.getFullYear();
+
+    // Validation
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    if (day < 1 || day > daysInMonth) {
+      return NextResponse.json(
+        { message: "Invalid day for the given month" },
+        { status: 400 },
+      );
+    }
+
     const deletedCompletion = await db
       .delete(habitsCompletionTable)
       .where(
         and(
           eq(habitsCompletionTable.clerkuserid, userid),
           eq(habitsCompletionTable.habitid, habitid),
-          sql`${habitsCompletionTable.completedata} = CURRENT_DATE`,
+          eq(habitsCompletionTable.day, day),
+          eq(habitsCompletionTable.month, month),
+          eq(habitsCompletionTable.year, year),
         ),
       )
       .returning();

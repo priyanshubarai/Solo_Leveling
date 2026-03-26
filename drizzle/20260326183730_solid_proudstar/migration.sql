@@ -1,0 +1,1 @@
+ALTER TABLE "habitscompletion" ADD CONSTRAINT "habitscompletion_habitid_day_month_year_unique" UNIQUE("habitid","day","month","year");
