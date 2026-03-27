@@ -99,8 +99,10 @@ export const goalsTable = pgTable("goals", {
     .notNull()
     .references(() => usersTable.clerkuserid, { onDelete: "cascade" }), //FK
   goaltitle: varchar({ length: 255 }).notNull(),
-  goaldesc: text(),
-  category: goalCategoryEnum().notNull().default("Weekly"),
+  goaldesc: text().default("no description"),
+  category: goalCategoryEnum().notNull().default("Monthly"),
+  completed: boolean().notNull().default(false),
+  // created_at: timestamp().defaultNow()
 });
 
 export const statTable = pgTable("stats", {

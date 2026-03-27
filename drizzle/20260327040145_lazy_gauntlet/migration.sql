@@ -1,0 +1,1 @@
+ALTER TABLE "goals" ALTER COLUMN "goaldesc" SET DEFAULT 'no description';

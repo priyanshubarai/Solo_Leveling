@@ -32,14 +32,16 @@ export async function POST(
   { params }: { params: Promise<{ userid: string }> },
 ) {
   const { userid } = await params;
+  const { goaltitle , goaldesc , category , completed} = await req.json();
   try {
-    const { goaltitle, goaldesc } = await req.json();
     const newGoal = await db
       .insert(goalsTable)
       .values({
         clerkuserid: userid,
         goaltitle: goaltitle,
         goaldesc: goaldesc,
+        category: category,
+        completed: completed,
       })
       .returning();
 
@@ -62,9 +64,8 @@ export async function DELETE(
   { params }: { params: Promise<{ userid: string }> },
 ) {
   const { userid } = await params;
+  const { goalid } = await req.json();
   try {
-    const { goalid } = await req.json();
-
     const deletedGoal = await db
       .delete(goalsTable)
       .where(
@@ -75,6 +76,35 @@ export async function DELETE(
     console.log("goal deleted : ", deletedGoal);
     return NextResponse.json(
       { message: "success", data: deletedGoal },
+      { status: 200 },
+    );
+  } catch (error) {
+    console.log("Error : ", error);
+    return NextResponse.json(
+      { message: "Internal Server Error" },
+      { status: 500 },
+    );
+  }
+}
+
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: Promise<{ userid: string }> },
+) {
+  const { userid } = await params;
+  const { goalid, completed } = await req.json();
+  try {
+    const updatedGoal = await db
+      .update(goalsTable)
+      .set({ completed: completed })
+      .where(
+        and(eq(goalsTable.clerkuserid, userid), eq(goalsTable.goalid, goalid)),
+      )
+      .returning();
+
+    console.log("goal updated : ", updatedGoal);
+    return NextResponse.json(
+      { message: "success", data: updatedGoal[0] },
       { status: 200 },
     );
   } catch (error) {
