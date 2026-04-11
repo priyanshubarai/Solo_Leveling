@@ -1,5 +1,5 @@
 import { goalsTable } from "@/db/schema";
-import db from "@/index";
+import db from "@/db";
 import { and, eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -13,7 +13,6 @@ export async function GET(
       .select()
       .from(goalsTable)
       .where(eq(goalsTable.clerkuserid, userid));
-    console.log("goals fetched : ", goals);
     return NextResponse.json(
       { message: "success", data: goals },
       { status: 200 },

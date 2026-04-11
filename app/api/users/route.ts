@@ -1,12 +1,40 @@
-import db from "@/index";
+import db from "@/db";
 import { usersTable } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 import { currentUser } from "@clerk/nextjs/server";
+import { desc } from "drizzle-orm";
 
-type NewUser = typeof usersTable.$inferInsert;
+export async function GET(_: NextRequest) {
+  try {
+    const user = await currentUser();
+    if (!user || !user.id)
+      return NextResponse.json(
+        { error: "no User Signed in!" },
+        { status: 401 },
+      );
 
-export async function POST(req: NextRequest) {
+    const res = await db
+      .select({
+        clerkuserid: usersTable.clerkuserid,
+        username: usersTable.username,
+        level: usersTable.level,
+        XP: usersTable.XP,
+      })
+      .from(usersTable)
+      .orderBy(desc(usersTable.XP));
+    console.log("users : ",res);
+    return NextResponse.json({ data: res }, { status: 200 });
+  } catch (err) {
+    console.log("Error :", err);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
+    );
+  }
+}
+
+export async function POST() {
   try {
     const user = await currentUser();
 

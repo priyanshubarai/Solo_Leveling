@@ -1,6 +1,6 @@
 import { habitsCompletionTable } from "@/db/schema";
 import { habits } from "@/drizzle/schema";
-import db from "@/index";
+import db from "@/db";
 import { and, eq, sql } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 

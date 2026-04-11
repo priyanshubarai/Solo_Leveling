@@ -1,5 +1,5 @@
 import { statTable } from "@/db/schema";
-import db from "@/index";
+import db from "@/db";
 import { error } from "console";
 import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
@@ -15,7 +15,6 @@ export async function GET(
       .from(statTable)
       .where(eq(statTable.clerkuserid, userid));
 
-    console.log("stats fetched : ", stats);
     return NextResponse.json(
       { message: "success", data: stats },
       { status: 200 },

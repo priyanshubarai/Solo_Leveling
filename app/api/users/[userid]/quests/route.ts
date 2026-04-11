@@ -1,5 +1,5 @@
 import { questsTable } from "@/db/schema";
-import db from "@/index";
+import db from "@/db";
 import { and, eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -21,7 +21,6 @@ export async function GET(
       .select()
       .from(questsTable)
       .where(and(...conditions));
-    console.log("quests fetched :", quests);
     return NextResponse.json(
       { message: "success", data: quests },
       { status: 200 },

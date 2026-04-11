@@ -1,6 +1,6 @@
 import { habitsTable } from "@/db/schema";
 import { NextRequest, NextResponse } from "next/server";
-import db from "@/index";
+import db from "@/db";
 import { and, eq } from "drizzle-orm";
 
 export async function GET(
@@ -13,7 +13,6 @@ export async function GET(
       .select()
       .from(habitsTable)
       .where(eq(habitsTable.clerkuserid, userid));
-    console.log("habits fetched : ", habits);
     return NextResponse.json(
       { message: "success", data: habits },
       { status: 200 },
